@@ -23,7 +23,6 @@
         "phpunit/phpunit": "~6.0",
         "orchestra/testbench": "~3.0"
     },
-    "minimum-stability": "dev",
     "extra": {
         "laravel": {
             "providers": [
