@@ -69,7 +69,7 @@ class FastAuthLink {
      */
     protected function addAuthParam($link, $user, $type)
     {
-        $hash = $this->hash($link, $type) . '|' . $user->id;
+        $hash = $this->hash($link, $type, $user->id) . '|' . $user->id;
 
         $query = parse_url($link, PHP_URL_QUERY);
 
@@ -87,11 +87,12 @@ class FastAuthLink {
      *
      * @param $link
      * @param $type
+     * @param $userId
      * @return string
      */
-    protected function hash($link, $type)
+    protected function hash($link, $type, $userId)
     {
-        return sha1($link . $this->salt . $this->getDateByType($type));
+        return sha1($link . $this->salt . $userId .$this->getDateByType($type));
     }
 
     /**
@@ -133,12 +134,12 @@ class FastAuthLink {
             return false;
         }
 
-        list($hash,) = explode("|", $hash);
+        list($hash, $userId) = explode("|", $hash);
 
         $linkWithoutHash = $this->getLinkWithoutHash($link);
 
         foreach ($possibleTypes as $date) {
-            if ($this->hash($linkWithoutHash, $date) === $hash) {
+            if ($this->hash($linkWithoutHash, $date, $userId) === $hash) {
                 return true;
             }
         }
