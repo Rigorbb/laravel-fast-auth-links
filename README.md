@@ -18,3 +18,5 @@ auth_link_hourly($link, $user); //add hash with hourly active
 auth_link_daily($link, $user); //add hash with daily active
 auth_link_monthly($link, $user); //add hash with monthly active
 ```
+
+And use the HandleFastAuthLink::class middleware
