@@ -128,11 +128,12 @@ class FastAuthLink {
         ];
 
         $hash = $this->parseHash($link);
-        list($hash,) = explode("|", $hash);
 
         if (empty($hash)) {
             return false;
         }
+
+        list($hash,) = explode("|", $hash);
 
         $linkWithoutHash = $this->getLinkWithoutHash($link);
 
@@ -151,10 +152,14 @@ class FastAuthLink {
      */
     protected function parseHash($link)
     {
+        if (!stristr($link, $this->paramKey . '=')) {
+            return null;
+        }
+
         $link = parse_url($link);
         parse_str($link['query'], $result);
 
-        return $result[$this->paramKey];
+        return urldecode($result[$this->paramKey]);
     }
 
     /**
@@ -165,16 +170,20 @@ class FastAuthLink {
      */
     protected function getLinkWithoutHash($link)
     {
-        $link = parse_url($link);
-        parse_str($link['query'], $result);
+        $params = parse_url($link)['query'];
 
-        unset($result[$this->paramKey]);
+        parse_str($params, $result);
 
-        $url = $link['scheme'] . '://' . $link['host'];
+        $param = $this->paramKey . '=' . $result[$this->paramKey];
+        $param = str_replace('|', '%7C', $param);
 
-        if (!empty($result)) {
-            $url .= '?' . http_build_query($result);
+        if (count($params) === 1) {
+            $param = '?' . $param;
+        } else {
+            $param = '&' . $param;
         }
+
+        $url = str_replace($param, '', $link);
 
         return $url;
     }
@@ -185,7 +194,7 @@ class FastAuthLink {
      */
     public function authByHash($url)
     {
-        list(,$userId) = $this->parseHash($url);
+        list(,$userId) = explode('|', $this->parseHash($url));
 
         Auth::loginUsingId($userId, true);
 
