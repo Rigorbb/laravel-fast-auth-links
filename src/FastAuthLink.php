@@ -145,7 +145,7 @@ class FastAuthLink {
                 }
             }
         } catch (\Exception $e) {
-            retrun false;
+            return false;
         }
         
 
