@@ -128,21 +128,26 @@ class FastAuthLink {
             static::FAST_AUTH_LINK_HOURLY,
         ];
 
-        $hash = $this->parseHash($link);
+        try {
+            $hash = $this->parseHash($link);
 
-        if (empty($hash)) {
-            return false;
-        }
-
-        list($hash, $userId) = explode("|", $hash);
-
-        $linkWithoutHash = $this->getLinkWithoutHash($link);
-
-        foreach ($possibleTypes as $date) {
-            if ($this->hash($linkWithoutHash, $date, $userId) === $hash) {
-                return true;
+            if (empty($hash)) {
+                return false;
             }
+    
+            list($hash, $userId) = explode("|", $hash);
+    
+            $linkWithoutHash = $this->getLinkWithoutHash($link);
+    
+            foreach ($possibleTypes as $date) {
+                if ($this->hash($linkWithoutHash, $date, $userId) === $hash) {
+                    return true;
+                }
+            }
+        } catch (\Exception $e) {
+            retrun false;
         }
+        
 
         return false;
     }
